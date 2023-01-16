@@ -18,10 +18,10 @@ class CalculateViewController: UIViewController {
     
     var splitValueString: String = ""
     var pct: Int = 10
+    var calculationBrain = CalculationBrain()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
 
     @IBAction func tipChanged(_ sender: UIButton) {
@@ -32,27 +32,17 @@ class CalculateViewController: UIViewController {
         twentyPctButton.isSelected = false
         sender.isSelected = true
 
-        if (sender.currentTitle == "0%") {
-            pct = 0
-        } else if (sender.currentTitle == "10%") {
-            pct = 10
-        } else if (sender.currentTitle == "20%") {
-            pct = 20
-        }
+        calculationBrain.SetPct(pct: sender.currentTitle ?? "10%")
     }
     
     @IBAction func stepperValueChanged(_ sender: UIStepper) {
         splitNumberLabel.text = "\(Int(sender.value))"
+        calculationBrain.SetSplit(split: splitNumberLabel.text ?? "2")
     }
+    
     @IBAction func calculatePressed(_ sender: UIButton) {
-        var totalSplitValue = Float(billTextField.text ?? "0.0") ?? 0.0
-        let splitNumberValue = Float(splitNumberLabel.text!)
-        
-        totalSplitValue += (totalSplitValue * (Float(pct)/100))
-        totalSplitValue /= Float(splitNumberValue ?? 2)
-        
-        splitValueString = String(format: "%.2f", totalSplitValue)
-        print(totalSplitValue)
+        calculationBrain.SetBill(bill: billTextField.text)
+        calculationBrain.calculateTip()
         
         performSegue(withIdentifier: "goToResult", sender: self)
     }
@@ -60,9 +50,9 @@ class CalculateViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "goToResult") {
             let destinationVC = segue.destination as! ResultViewController
-            destinationVC.splitValue = Float(splitValueString) ?? 0.0
-            destinationVC.splitNumber = Int(splitNumberLabel.text!) ?? 2
-            destinationVC.pctValue = pct
+            destinationVC.totalSplit = calculationBrain.GetTotalSplit()
+            destinationVC.splitNumber = calculationBrain.GetSplitNumber()
+            destinationVC.pctValue = calculationBrain.GetPct()
         }
     }
 }

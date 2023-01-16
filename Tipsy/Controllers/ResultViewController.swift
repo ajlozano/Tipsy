@@ -13,14 +13,14 @@ class ResultViewController: UIViewController {
     @IBOutlet weak var settingLabel: UILabel!
     @IBOutlet weak var totalLabel: UILabel!
     
-    var splitValue: Float = 0.0
-    var splitNumber: Int = 0
-    var pctValue: Int = 0
+    var totalSplit: Float?
+    var splitNumber: Int?
+    var pctValue: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        totalLabel.text = "\(splitValue)"
-        settingLabel.text = "Split between \(splitNumber) people, with \(pctValue)% tip."
+        totalLabel.text = String(format: "%.2f", totalSplit ?? 0.0)
+        settingLabel.text = "Split between \(splitNumber ?? 2) people, with \(pctValue ?? 10)% tip."
     }
 
     @IBAction func recalculatePressed(_ sender: UIButton) {
